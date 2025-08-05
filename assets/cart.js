@@ -12,6 +12,398 @@ class CartRemoveButton extends HTMLElement {
 
 customElements.define('cart-remove-button', CartRemoveButton);
 
+//the below code is not removing the bundle parent and its children
+// class CartRemoveButton extends HTMLElement {
+//   constructor() {
+//     super();
+
+//     this.addEventListener('click', async (event) => {
+//       event.preventDefault();
+//       const cartItems = this.closest('cart-items') || this.closest('cart-drawer-items');
+//       const index = this.dataset.index;
+
+//       // Fetch cart to get line item properties
+//       const cartRes = await fetch('/cart.js');
+//       const cartData = await cartRes.json();
+//       const lineIndex = parseInt(index, 10) - 1;
+//       const lineItem = cartData.items[lineIndex];
+
+//       // Check if this is a bundle parent (has _bundle_group property)
+//       if (lineItem && lineItem.properties && lineItem.properties._bundle_group) {
+//         const bundleGroup = lineItem.properties._bundle_group;
+
+//         // Find all line indexes with the same _bundle_group
+//         const linesToRemove = [];
+//         cartData.items.forEach((item, idx) => {
+//           if (item.properties && item.properties._bundle_group === bundleGroup) {
+//             linesToRemove.push(idx + 1); // Shopify line numbers are 1-based
+//           }
+//         });
+
+//         // Remove all items in the bundle group
+//         for (const line of linesToRemove) {
+//           await cartItems.updateQuantity(line, 0, event);
+//         }
+//       } else {
+//         // Default: remove only this item
+//         cartItems.updateQuantity(index, 0, event);
+//       }
+//     });
+//   }
+// }
+
+// customElements.define('cart-remove-button', CartRemoveButton);
+
+
+// the below code is removing the add on products one by one
+
+// class CartRemoveButton extends HTMLElement {
+//   constructor() {
+//     super();
+
+//     this.addEventListener('click', async (event) => {
+//       event.preventDefault();
+//       const cartItems = this.closest('cart-items') || this.closest('cart-drawer-items');
+//       const index = this.dataset.index;
+
+//       // Fetch cart to get line item properties
+//       const cartRes = await fetch('/cart.js');
+//       const cartData = await cartRes.json();
+//       const lineIndex = parseInt(index, 10) - 1;
+//       const lineItem = cartData.items[lineIndex];
+
+//       // Check if this is a bundle parent (has _bundle_group property)
+//       if (lineItem && lineItem.properties && lineItem.properties._bundle_group) {
+//         const bundleGroup = lineItem.properties._bundle_group;
+
+//         // Find all line indexes with the same _bundle_group
+//         const linesToRemove = [];
+//         cartData.items.forEach((item, idx) => {
+//           if (item.properties && item.properties._bundle_group === bundleGroup) {
+//             linesToRemove.push(idx + 1); // Shopify line numbers are 1-based
+//           }
+//         });
+
+//         // Remove all items in the bundle group in reverse order to avoid shifting indexes
+//         for (const line of linesToRemove.sort((a, b) => b - a)) {
+//           await cartItems.updateQuantity(line, 0, event);
+//         }
+//       } else {
+//         // Default: remove only this item
+//         cartItems.updateQuantity(index, 0, event);
+//       }
+//     });
+//   }
+// }
+
+// customElements.define('cart-remove-button', CartRemoveButton);
+
+
+// the below code is getting 422 response code in console
+// class CartRemoveButton extends HTMLElement {
+//   constructor() {
+//     super();
+
+//     this.addEventListener('click', async (event) => {
+//       event.preventDefault();
+//       const cartItems = this.closest('cart-items') || this.closest('cart-drawer-items');
+//       const index = this.dataset.index;
+
+//       // Fetch cart to get line item properties
+//       const cartRes = await fetch('/cart.js');
+//       const cartData = await cartRes.json();
+//       const lineIndex = parseInt(index, 10) - 1;
+//       const lineItem = cartData.items[lineIndex];
+
+//       // Check if this is a bundle parent (has _bundle_group property)
+//       if (lineItem && lineItem.properties && lineItem.properties._bundle_group) {
+//         const bundleGroup = lineItem.properties._bundle_group;
+
+//         // Find all line indexes with the same _bundle_group
+//         const linesToRemove = [];
+//         cartData.items.forEach((item, idx) => {
+//           if (item.properties && item.properties._bundle_group === bundleGroup) {
+//             linesToRemove.push(idx + 1); // Shopify line numbers are 1-based
+//           }
+//         });
+
+//         // Build updates array for all lines to remove
+//         const updates = {};
+//         linesToRemove.forEach(line => {
+//           updates[line] = 0;
+//         });
+
+//         // Send a single request to update all lines at once
+//         fetch('/cart/update.js', {
+//           method: 'POST',
+//           headers: {
+//             'Content-Type': 'application/json',
+//             'X-Requested-With': 'XMLHttpRequest',
+//           },
+//           body: JSON.stringify({ updates })
+//         }).then(() => {
+//           // Refresh cart sections
+//           if (cartItems.onCartUpdate) {
+//             cartItems.onCartUpdate();
+//           } else {
+//             window.location.reload();
+//           }
+//         });
+//       } else {
+//         // Default: remove only this item
+//         cartItems.updateQuantity(index, 0, event);
+//       }
+//     });
+//   }
+// }
+
+// customElements.define('cart-remove-button', CartRemoveButton);
+
+// the below code is getting the error
+// class CartRemoveButton extends HTMLElement {
+//   constructor() {
+//     super();
+
+//     this.addEventListener('click', async (event) => {
+//       event.preventDefault();
+//       const cartItems = this.closest('cart-items') || this.closest('cart-drawer-items');
+//       const index = this.dataset.index;
+
+//       // Fetch cart to get line item properties
+//       const cartRes = await fetch('/cart.js');
+//       const cartData = await cartRes.json();
+//       const lineIndex = parseInt(index, 10) - 1;
+//       const lineItem = cartData.items[lineIndex];
+
+//       // Check if this is a bundle parent (has _bundle_group property)
+//       if (lineItem && lineItem.properties && lineItem.properties._bundle_group) {
+//         const bundleGroup = lineItem.properties._bundle_group;
+
+//         // Find all line indexes with the same _bundle_group
+//         const linesToRemove = [];
+//         cartData.items.forEach((item, idx) => {
+//           if (item.properties && item.properties._bundle_group === bundleGroup) {
+//             linesToRemove.push(idx + 1); // Shopify line numbers are 1-based
+//           }
+//         });
+
+//         // Remove duplicates and sort descending
+//         const uniqueLines = [...new Set(linesToRemove)].sort((a, b) => b - a);
+
+//         // Build updates object
+//         const updates = {};
+//         uniqueLines.forEach(line => {
+//           updates[line] = 0;
+//         });
+
+//         // Only send if there are lines to remove
+//         if (uniqueLines.length > 0) {
+//           fetch('/cart/update.js', {
+//             method: 'POST',
+//             headers: {
+//               'Content-Type': 'application/json',
+//               'X-Requested-With': 'XMLHttpRequest',
+//             },
+//             body: JSON.stringify({ updates })
+//           }).then((res) => {
+//             if (res.ok) {
+//               if (cartItems.onCartUpdate) {
+//                 cartItems.onCartUpdate();
+//               } else {
+//                 window.location.reload();
+//               }
+//             } else {
+//               window.location.reload();
+//             }
+//           });
+//         }
+//       } else {
+//         // Default: remove only this item
+//         cartItems.updateQuantity(index, 0, event);
+//       }
+//     });
+//   }
+// }
+
+// customElements.define('cart-remove-button', CartRemoveButton);
+
+// this code is removing the items but removing the wrong items
+// class CartRemoveButton extends HTMLElement {
+//   constructor() {
+//     super();
+
+//     this.addEventListener('click', async (event) => {
+//       event.preventDefault();
+//       const cartItems = this.closest('cart-items') || this.closest('cart-drawer-items');
+//       const index = this.dataset.index;
+
+//       // Fetch cart to get line item properties
+//       let cartRes = await fetch('/cart.js');
+//       let cartData = await cartRes.json();
+//       let lineIndex = parseInt(index, 10) - 1;
+//       let lineItem = cartData.items[lineIndex];
+
+//       // Check if this is a bundle parent (has _bundle_group property)
+//       if (lineItem && lineItem.properties && lineItem.properties._bundle_group) {
+//         const bundleGroup = lineItem.properties._bundle_group;
+
+//         // Find all line indexes with the same _bundle_group
+//         let linesToRemove = [];
+//         cartData.items.forEach((item, idx) => {
+//           if (item.properties && item.properties._bundle_group === bundleGroup) {
+//             linesToRemove.push(idx + 1); // Shopify line numbers are 1-based
+//           }
+//         });
+
+//         // Remove each line one by one, always fetching the latest cart state
+//         for (let i = 0; i < linesToRemove.length; i++) {
+//           // Always fetch the latest cart state before removing
+//           cartRes = await fetch('/cart.js');
+//           cartData = await cartRes.json();
+//           // Find the current line number for this bundle group item
+//           let currentLine = null;
+//           cartData.items.forEach((item, idx) => {
+//             if (item.properties && item.properties._bundle_group === bundleGroup) {
+//               currentLine = idx + 1;
+//             }
+//           });
+//           if (currentLine) {
+//             await cartItems.updateQuantity(currentLine, 0, event);
+//           }
+//         }
+
+//         // After all are removed, refresh cart
+//         if (cartItems.onCartUpdate) {
+//           cartItems.onCartUpdate();
+//         } else {
+//           window.location.reload();
+//         }
+//       } else {
+//         // Default: remove only this item
+//         cartItems.updateQuantity(index, 0, event);
+//       }
+//     });
+//   }
+// }
+
+// customElements.define('cart-remove-button', CartRemoveButton);
+
+
+// the below code is working but an extra item is removed from cart and getting 422 response with error errors: "line parameter is invalid."
+// class CartRemoveButton extends HTMLElement {
+//   constructor() {
+//     super();
+
+//     this.addEventListener('click', async (event) => {
+//       event.preventDefault();
+//       const cartItems = this.closest('cart-items') || this.closest('cart-drawer-items');
+//       const index = this.dataset.index;
+
+//       // Fetch cart to get line item properties
+//       let cartRes = await fetch('/cart.js');
+//       let cartData = await cartRes.json();
+//       let lineIndex = parseInt(index, 10) - 1;
+//       let lineItem = cartData.items[lineIndex];
+
+//       // If this is a bundle parent (has _bundle_group property)
+//       if (lineItem && lineItem.properties && lineItem.properties._bundle_group) {
+//         const bundleGroup = lineItem.properties._bundle_group;
+
+//         // Remove all items with the same _bundle_group identifier
+//         let stillRemoving = true;
+//         while (stillRemoving) {
+//           // Always fetch the latest cart state
+//           cartRes = await fetch('/cart.js');
+//           cartData = await cartRes.json();
+
+//           // Find the first item with the bundleGroup
+//           let found = false;
+//           for (let i = 0; i < cartData.items.length; i++) {
+//             const item = cartData.items[i];
+//             if (item.properties && item.properties._bundle_group === bundleGroup) {
+//               // Remove this item by its current line number
+//               await cartItems.updateQuantity(i + 1, 0, event);
+//               found = true;
+//               break; // Remove one at a time, then re-fetch
+//             }
+//           }
+//           if (!found) stillRemoving = false;
+//         }
+
+//         // After all are removed, refresh cart
+//         if (cartItems.onCartUpdate) {
+//           cartItems.onCartUpdate();
+//         } else {
+//           window.location.reload();
+//         }
+//       } else {
+//         // Default: remove only this item
+//         cartItems.updateQuantity(index, 0, event);
+//       }
+//     });
+//   }
+// }
+
+// customElements.define('cart-remove-button', CartRemoveButton);
+
+// the below code is not working
+// class CartRemoveButton extends HTMLElement {
+//   constructor() {
+//     super();
+
+//     this.addEventListener('click', async (event) => {
+//       event.preventDefault();
+//       const cartItems = this.closest('cart-items') || this.closest('cart-drawer-items');
+//       const index = this.dataset.index;
+
+//       // Fetch the latest cart state
+//       const cartRes = await fetch('/cart.js');
+//       const cartData = await cartRes.json();
+//       const lineIndex = parseInt(index, 10) - 1;
+//       const lineItem = cartData.items[lineIndex];
+
+//       // If this is a bundle parent (has _bundle_group property)
+//       if (lineItem && lineItem.properties && lineItem.properties._bundle_group) {
+//         const bundleGroup = lineItem.properties._bundle_group;
+
+//         // Collect all line numbers for this bundle group
+//         const updates = {};
+//         cartData.items.forEach((item, idx) => {
+//           if (item.properties && item.properties._bundle_group === bundleGroup) {
+//             updates[idx + 1] = 0; // Shopify line numbers are 1-based
+//           }
+//         });
+
+//         // Only send if there are lines to remove
+//         if (Object.keys(updates).length > 0) {
+//           fetch('/cart/update.js', {
+//             method: 'POST',
+//             headers: {
+//               'Content-Type': 'application/json',
+//               'X-Requested-With': 'XMLHttpRequest',
+//             },
+//             body: JSON.stringify({ updates })
+//           }).then((res) => {
+//             if (cartItems.onCartUpdate) {
+//               cartItems.onCartUpdate();
+//             } else {
+//               window.location.reload();
+//             }
+//           });
+//         }
+//       } else {
+//         // Default: remove only this item
+//         cartItems.updateQuantity(index, 0, event);
+//       }
+//     });
+//   }
+// }
+
+// customElements.define('cart-remove-button', CartRemoveButton);
+
+
+
+
 class CartItems extends HTMLElement {
   constructor() {
     super();

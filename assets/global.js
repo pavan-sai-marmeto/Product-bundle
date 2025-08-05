@@ -1330,3 +1330,58 @@ class CartPerformance {
     );
   }
 }
+
+class customRemoveButton extends HTMLElement {
+  constructor() {
+    super();
+    this.cart = document.querySelector("cart-notification") || document.querySelector("cart-drawer");
+    this.showCart = true;
+  }
+
+  connectedCallback() {
+    this.addEventListener('click', (event) => {
+      event.preventDefault();
+      this.removeBundleFromCart();
+    });
+  }
+
+  removeBundleFromCart() {
+    const removeButton = this.querySelector('button');
+    if (!removeButton || !removeButton.dataset.removehasaddictedtogoodbox) {
+      console.error("Remove button or dataset is missing.");
+      return;
+    }
+
+    let variantIds = removeButton.dataset.removehasaddictedtogoodbox.split(', ');
+    let updates = {};
+    variantIds.forEach((id) => {
+      if(id !== ""){
+        let variantId = id.split(":")[0].trim();
+        updates[variantId] = 0;
+      }
+    });
+
+    const payload = {
+      updates: updates,
+      sections: this.cart.getSectionsToRender().map(({ id }) => id),
+      sections_url: window.location.pathname
+    };
+
+    fetch('/cart/update.js', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
+    .then(response => response.json())
+    .then(data => {
+      this.cart.renderContents(data, this.showCart);
+    })
+    .catch(error => {
+      console.error("Error updating cart:", error.message);
+    });
+  }
+}
+
+customElements.define('custom-remove-button', customRemoveButton);

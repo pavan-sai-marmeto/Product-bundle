@@ -62,9 +62,17 @@ class CartNotification extends HTMLElement {
     ];
   }
 
+  // getSectionInnerHTML(html, selector = '.shopify-section') {
+  //   return new DOMParser().parseFromString(html, 'text/html').querySelector(selector).innerHTML;
+  // }
+
+  //Bundle product change start
   getSectionInnerHTML(html, selector = '.shopify-section') {
-    return new DOMParser().parseFromString(html, 'text/html').querySelector(selector).innerHTML;
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    const section = doc.querySelector(selector);
+    return section ? section.innerHTML : '';
   }
+  //Bundle product change end
 
   handleBodyClick(evt) {
     const target = evt.target;
