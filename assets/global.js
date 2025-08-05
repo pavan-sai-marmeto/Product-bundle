@@ -1331,52 +1331,113 @@ class CartPerformance {
   }
 }
 
-class customRemoveButton extends HTMLElement {
+// class customRemoveButton extends HTMLElement {
+//   constructor() {
+//     super();
+//     this.cart = document.querySelector("cart-notification") || document.querySelector("cart-drawer");
+//     this.showCart = true;
+//   }
+
+//   connectedCallback() {
+//     this.addEventListener('click', (event) => {
+//       event.preventDefault();
+//       this.removeBundleFromCart();
+//     });
+//   }
+
+//   removeBundleFromCart() {
+//     const removeButton = this.querySelector('button');
+//     if (!removeButton || !removeButton.dataset.removehasaddictedtogoodbox) {
+//       console.error("Remove button or dataset is missing.");
+//       return;
+//     }
+
+//     let variantIds = removeButton.dataset.removehasaddictedtogoodbox.split(', ');
+//     let updates = {};
+//     variantIds.forEach((id) => {
+//       if(id !== ""){
+//         let variantId = id.split(":")[0].trim();
+//         updates[variantId] = 0;
+//       }
+//     });
+
+//     const payload = {
+//       updates: updates,
+//       sections: this.cart.getSectionsToRender().map(({ id }) => id),
+//       sections_url: window.location.pathname
+//     };
+
+//     fetch('/cart/update.js', {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//       body: JSON.stringify(payload),
+//     })
+//     .then(response => response.json())
+//     .then(data => {
+//       this.cart.renderContents(data, this.showCart);
+//     })
+//     .catch(error => {
+//       console.error("Error updating cart:", error.message);
+//     });
+//   }
+// }
+
+// customElements.define('custom-remove-button', customRemoveButton);
+
+
+class CustomRemoveButton extends HTMLElement {
   constructor() {
     super();
     this.cart = document.querySelector("cart-notification") || document.querySelector("cart-drawer");
-    this.showCart = true;
   }
 
   connectedCallback() {
-    this.addEventListener('click', (event) => {
+    this.addEventListener("click", (event) => {
       event.preventDefault();
       this.removeBundleFromCart();
     });
   }
 
   removeBundleFromCart() {
-    const removeButton = this.querySelector('button');
-    if (!removeButton || !removeButton.dataset.removehasaddictedtogoodbox) {
-      console.error("Remove button or dataset is missing.");
+    const removeButton = this.querySelector("button");
+
+    if (!removeButton || !removeButton.dataset.bundleVariantIds) {
+      console.error("Missing data-bundle-variant-ids on button");
       return;
     }
 
-    let variantIds = removeButton.dataset.removehasaddictedtogoodbox.split(', ');
-    let updates = {};
-    variantIds.forEach((id) => {
-      if(id !== ""){
-        let variantId = id.split(":")[0].trim();
-        updates[variantId] = 0;
-      }
+    const variantIds = removeButton.dataset.bundleVariantIds.split(',').map(id => id.trim()).filter(id => id !== "");
+
+    if (variantIds.length === 0) return;
+
+    const updates = {};
+    variantIds?.forEach(variantId => {
+      updates[variantId] = 0;
     });
 
     const payload = {
-      updates: updates,
-      sections: this.cart.getSectionsToRender().map(({ id }) => id),
+      updates,
+      sections: this.cart.getSectionsToRender().map(section => section.id),
       sections_url: window.location.pathname
     };
+    console.log(payload)
 
-    fetch('/cart/update.js', {
-      method: 'POST',
+    fetch("/cart/update.js", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
+        Accept: "application/json"
       },
       body: JSON.stringify(payload),
     })
     .then(response => response.json())
     .then(data => {
-      this.cart.renderContents(data, this.showCart);
+      if (data.item_count === 0) {
+        this.cart?.classList.add("is-empty");
+      }
+      this.cart?.renderContents(data);
     })
     .catch(error => {
       console.error("Error updating cart:", error.message);
@@ -1384,4 +1445,4 @@ class customRemoveButton extends HTMLElement {
   }
 }
 
-customElements.define('custom-remove-button', customRemoveButton);
+customElements.define("custom-remove-button", CustomRemoveButton);

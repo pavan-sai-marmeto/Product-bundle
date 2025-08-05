@@ -117,7 +117,80 @@
                   </thead>
 
                   <tbody role="rowgroup">
+                    {%- assign shown_bundle_groups = '' -%}
+{%- for item in cart.items -%}
+  {%- assign group = item.properties._bundle_group -%}
+
+  {%- if group != blank -%}
+    {%- unless shown_bundle_groups contains group -%}
+      {%- assign shown_bundle_groups = shown_bundle_groups | append: group | append: ',' -%}
+
+      {%- assign bundle_total = 0 -%}
+      {%- assign bundle_titles = '' -%}
+      {%- assign bundle_variant_ids = '' -%}
+
+      {%- for inner_item in cart.items -%}
+        {%- if inner_item.properties._bundle_group == group -%}
+          {%- assign bundle_total = bundle_total | plus: inner_item.final_line_price -%}
+          {%- assign bundle_titles = bundle_titles | append: inner_item.product.title | append: '|||' -%}
+          {%- assign bundle_variant_ids = bundle_variant_ids | append: inner_item.variant_id | append: ',' -%}
+        {%- endif -%}
+      {%- endfor -%}
+
+      <tr class="cart-item" role="row">
+        <td class="cart-item__media">
+          {% if settings.brand_image %}
+            <img
+              src="{{ settings.brand_image | image_url }}"
+              alt="{{ settings.brand_image }}"
+              loading="lazy"
+              width="150"
+              height="{{ 150 | divided_by: settings.brand_image.aspect_ratio | ceil }}"
+            >
+          {% endif %}
+        </td>
+
+        <td class="cart-item__details">
+          <a class="cart-item__name h4">
+            {{ settings.build_pc_title | escape }}
+          </a>
+          <div class="product-option product-price">
+            {{ bundle_total | money }}
+          </div>
+
+          <dl class="bundle-products">
+            <dt>Bundle Includes:</dt>
+            <dd>
+              <ol>
+                {%- assign titles_array = bundle_titles | split: '|||' -%}
+                {%- for title in titles_array -%}
+                  {%- if title != '' -%}
+                    <li>{{ title }}</li>
+                  {%- endif -%}
+                {%- endfor -%}
+              </ol>
+            </dd>
+          </dl>
+        </td>
+
+        <td class="cart-item__quantity">
+          <custom-remove-button>
+            <button
+              type="button"
+              class="button button--tertiary cart-remove-button"
+              data-bundle-variant-ids="{{ bundle_variant_ids | strip_newlines }}"
+            >
+              {{ 'sections.cart.remove_text' }}
+            </button>
+          </custom-remove-button>
+        </td>
+      </tr>
+    {%- endunless -%}
+  {%- endif -%}
+{%- endfor -%}
+
                     {%- for item in cart.items -%}
+                      {% if item.properties._bundle_group  == blank %}
                       <tr
                         id="CartDrawer-Item-{{ item.index | plus: 1 }}"
                         class="cart-item{% if item.parent_relationship.parent != null %} cart-item__nested-line{% endif %}"
@@ -461,6 +534,7 @@
                           </quantity-popover>
                         </td>
                       </tr>
+                    {% endif %}
                     {%- endfor -%}
                   </tbody>
                 </table>
