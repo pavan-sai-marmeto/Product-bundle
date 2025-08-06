@@ -30,6 +30,66 @@ if (!customElements.get('product-form')) {
         const config = fetchConfig('javascript');
         config.headers['X-Requested-With'] = 'XMLHttpRequest';
         delete config.headers['Content-Type'];
+        const properties = 'Bundle products';
+        // Bundle product code start 
+        let selectedProducts = this.form.querySelectorAll('input[name="bundle_products[]"]:checked');
+        selectedProducts = [...selectedProducts];
+        if (selectedProducts.length > 0) {
+          this.mainVariantId = this.variantIdInput.value;
+          const bundleGroupId = `build-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+          const items = [];
+          const mainProductData = {
+            id: parseInt(this.mainVariantId, 10),
+            quantity: 1,
+            properties: {}
+          };
+          if (properties) {
+            mainProductData.properties.Bundle = properties;
+            mainProductData.properties.BundleGroup = bundleGroupId;
+          }
+          items.push(mainProductData); 
+        selectedProducts.forEach((product) => {
+          const item = {
+            id: parseInt(product.value, 10),
+            quantity: 1,
+            properties: {}
+          };
+    
+          if (properties) {
+            item.properties.Bundle = properties;
+            item.properties.BundleGroup = bundleGroupId;
+          }
+          items.push(item);
+          
+        });
+        const formData = {
+          items: items
+        };
+
+
+      if (this.cart) {
+        formData.sections = this.cart
+          .getSectionsToRender()
+          .map((section) => section.id);
+        formData.sections_url = window.location.pathname;
+        this.cart.setActiveElement(document.activeElement);
+      }
+
+      fetch(`${window.Shopify.routes.root}cart/add.js`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          this.cart?.classList.remove("is-empty");
+            this.cart?.renderContents(data);
+        })
+        .catch((err) => {
+          console.error("Error adding to cart:", err);
+        });
+          return
+        }
 
         const formData = new FormData(this.form);
         if (this.cart) {
