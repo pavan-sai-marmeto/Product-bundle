@@ -1216,6 +1216,24 @@
     ]
   },
   {
+    "name": "Bundle products",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "bundle_product_image",
+        "label": "Budle product image",
+        "info": "Recommended size 800px X 800px"
+      },
+      {
+        "type": "text",
+        "id": "bundle_products_title",
+        "label": "Bundle products title",
+        "info": "This title is shown in cart drawer",
+        "default": "Bundle includes"
+      }
+    ]
+  },
+  {
     "name": "t:settings_schema.badges.name",
     "settings": [
       {

@@ -56,6 +56,52 @@
           class="product-variant-id"
         >
 
+        {%- assign bundle_products = product.metafields.custom.product_add_ons.value -%}
+        {%- if bundle_products and bundle_products.count > 0 -%}
+          <style>
+            .product-bundle-item__label {
+              display: flex;
+              align-items: center;
+              cursor: pointer;
+              gap: 10px;
+            }
+          </style>
+
+          <div class="product-bundle">
+            <h3 class="product-bundle__title">{{ 'Frequently brought together' }}</h3>
+            <p class="product-bundle__description">{{ 'Add these along with main product' }}</p>
+            {%- for bundle_product in bundle_products -%}
+              {%- assign bundle_variant = bundle_product.selected_or_first_available_variant -%}
+              <div class="product-bundle-item">
+                <label class="product-bundle-item__label">
+                  <input
+                    type="checkbox"
+                    name="bundle_products[]"
+                    value="{{ bundle_variant.id }}"
+                    class="product-bundle-item__checkbox"
+                  >
+                  <span class="product-bundle-item__image-wrapper">
+                    <img
+                      src="{{ bundle_product.featured_image | image_url: width: 100 }}"
+                      alt="{{ bundle_product.title }}"
+                      class="product-bundle-item__image"
+                      width="30" height="30"
+                    />
+                  </span>
+                  <span class="product-bundle-item__title">{{ bundle_product.title }}</span>
+                  <span class="product-bundle-item__price">
+                    {%- if bundle_variant.available -%}
+                      {{ bundle_variant.price | money }}
+                    {%- else -%}
+                      {{ 'products.product.sold_out' | t }}
+                    {%- endif -%}
+                  </span>
+                </label>
+              </div>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+
         {%- if gift_card_recipient_feature_active -%}
           {%- render 'gift-card-recipient-form', product: product, form: form, section: section -%}
         {%- endif -%}

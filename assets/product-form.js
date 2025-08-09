@@ -31,6 +31,79 @@ if (!customElements.get('product-form')) {
         config.headers['X-Requested-With'] = 'XMLHttpRequest';
         delete config.headers['Content-Type'];
 
+        // Bundle product code start 
+        const properties = 'Bundle products';
+        let selectedProducts = this.form.querySelectorAll('input[name="bundle_products[]"]:checked');
+        selectedProducts = [...selectedProducts];
+        if (selectedProducts.length > 0) {
+          this.mainVariantId = this.variantIdInput.value;
+          const bundleGroupId = `bundle-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+          const items = [];
+          const mainProductData = {
+            id: parseInt(this.mainVariantId, 10),
+            quantity: 1,
+            properties: {}
+          };
+          if (properties) {
+            mainProductData.properties.Bundle = properties;
+            mainProductData.properties.BundleGroup = bundleGroupId;
+          }
+          items.push(mainProductData); 
+          selectedProducts.forEach((product) => {
+            const item = {
+              id: parseInt(product.value, 10),
+              quantity: 1,
+              properties: {}
+            };
+    
+            if (properties) {
+              item.properties.Bundle = properties;
+              item.properties.BundleGroup = bundleGroupId;
+            }
+            items.push(item);
+            
+          });
+          const formData = {
+            items: items
+          };
+
+
+        if (this.cart) {
+          formData.sections = this.cart
+            .getSectionsToRender()
+            .map((section) => section.id);
+          formData.sections_url = window.location.pathname;
+          this.cart.setActiveElement(document.activeElement);
+        }
+
+        fetch(`${window.Shopify.routes.root}cart/add.js`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            this.cart?.classList.remove("is-empty");
+            this.cart?.renderContents(data);
+            this.submitButton.classList.remove('loading');
+            this.querySelector('.loading__spinner').classList.add('hidden');
+          })
+          .catch((err) => {
+            console.error("Error adding to cart:", err);
+          })
+          .finally(() => {
+            this.submitButton.classList.remove('loading');
+            if (this.cart && this.cart.classList.contains('is-empty')) this.cart.classList.remove('is-empty');
+            if (!this.error) this.submitButton.removeAttribute('aria-disabled');
+            this.querySelector('.loading__spinner').classList.add('hidden');
+            this.form.querySelectorAll('input[name="bundle_products[]"]').forEach(eachCheckbox => {
+              eachCheckbox.checked = false;
+            });
+          });
+          return
+        }
+        // Bundle product code end
+
         const formData = new FormData(this.form);
         if (this.cart) {
           formData.append(
